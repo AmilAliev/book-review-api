@@ -1,11 +1,15 @@
 package com.bookreview.api.service.impl;
 
 import com.bookreview.api.dto.BookDto;
+import com.bookreview.api.dto.BookResponse;
 import com.bookreview.api.exceptions.BookNotFoundException;
 import com.bookreview.api.models.Book;
 import com.bookreview.api.repository.BookRepository;
 import com.bookreview.api.service.BookService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -25,12 +29,22 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
-    public List<BookDto> getAllBooks() {
-//        Book book = bookRepository.findById(5L).orElseThrow(() -> new BookNotFoundException("Book could not be found by id"));
-        List<Book> books = bookRepository.findAll();
-        return books.stream()
+    public BookResponse getAllBooks(int pageNumber, int pageSize) {
+        Pageable pageable = PageRequest.of(pageNumber, pageSize);
+        Page<Book> books = bookRepository.findAll(pageable);
+        List<Book> bookList = books.getContent();
+        List<BookDto> content = bookList.stream()
                 .map(b -> mapToDto(b))
-                .collect(Collectors.toList());
+                .toList();
+        BookResponse bookResponse = new BookResponse();
+        bookResponse.setContent(content);
+        bookResponse.setPageNumber(books.getNumber());
+        bookResponse.setPageSize(books.getSize());
+        bookResponse.setTotalElements((int) books.getTotalElements());
+        bookResponse.setTotalPages(books.getTotalPages());
+        bookResponse.setLastPage(books.isLast());
+
+        return bookResponse;
     }
 
     @Override
@@ -47,7 +61,7 @@ public class BookServiceImpl implements BookService {
         book.setPrice(bookDto.getPrice());
 
         Book updatedBook = bookRepository.save(book);
-        return  mapToDto(updatedBook);
+        return mapToDto(updatedBook);
     }
 
     @Override
@@ -57,7 +71,7 @@ public class BookServiceImpl implements BookService {
     }
 
 
-    private Book  mapToEntity(BookDto bookDto) {
+    private Book mapToEntity(BookDto bookDto) {
         Book book = new Book();
         book.setTitle(bookDto.getTitle());
         book.setAuthor(bookDto.getAuthor());

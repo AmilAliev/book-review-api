@@ -1,6 +1,7 @@
 package com.bookreview.api.controllers;
 
 import com.bookreview.api.dto.BookDto;
+import com.bookreview.api.dto.BookResponse;
 import com.bookreview.api.service.BookService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -17,8 +18,10 @@ public class BookController {
     private final BookService bookService;
 
     @GetMapping("book")
-    public ResponseEntity<List<BookDto>> getBooks() {
-       return new ResponseEntity<>(bookService.getAllBooks(),HttpStatus.OK);
+    public ResponseEntity<BookResponse> getBooks(
+            @RequestParam(value = "pageNumber",defaultValue = "0",required = false) int pageNumber,
+            @RequestParam(value = "pageSize",defaultValue = "10",required = false) int pageSize) {
+       return new ResponseEntity<>(bookService.getAllBooks(pageNumber,pageSize),HttpStatus.OK);
     }
 
     @GetMapping("book/{id}")

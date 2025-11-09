@@ -1,13 +1,15 @@
 package com.bookreview.api.service;
 
 import com.bookreview.api.dto.BookDto;
+import com.bookreview.api.dto.BookResponse;
+import com.bookreview.api.models.Book;
 
 import java.util.List;
 
 public interface BookService {
 
     BookDto createBook(BookDto bookDto);
-    List<BookDto> getAllBooks();
+    BookResponse getAllBooks(int pageNumber, int pageSize);
     BookDto getBookById(long id);
     BookDto updateBook(BookDto bookDto, long id);
     void deleteBookById(long id);

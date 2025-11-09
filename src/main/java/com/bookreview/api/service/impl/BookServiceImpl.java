@@ -1,6 +1,7 @@
 package com.bookreview.api.service.impl;
 
 import com.bookreview.api.dto.BookDto;
+import com.bookreview.api.exceptions.BookNotFoundException;
 import com.bookreview.api.models.Book;
 import com.bookreview.api.repository.BookRepository;
 import com.bookreview.api.service.BookService;
@@ -25,10 +26,34 @@ public class BookServiceImpl implements BookService {
 
     @Override
     public List<BookDto> getAllBooks() {
+//        Book book = bookRepository.findById(5L).orElseThrow(() -> new BookNotFoundException("Book could not be found by id"));
         List<Book> books = bookRepository.findAll();
         return books.stream()
                 .map(b -> mapToDto(b))
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public BookDto getBookById(long id) {
+        Book book = bookRepository.findById(id).orElseThrow(() -> new BookNotFoundException("Book with id: " + id + " not found"));
+        return mapToDto(book);
+    }
+
+    @Override
+    public BookDto updateBook(BookDto bookDto, long id) {
+        Book book = bookRepository.findById(id).orElseThrow(() -> new BookNotFoundException("Book with id: " + id + " could not be updated"));
+        book.setTitle(bookDto.getTitle());
+        book.setAuthor(bookDto.getAuthor());
+        book.setPrice(bookDto.getPrice());
+
+        Book updatedBook = bookRepository.save(book);
+        return  mapToDto(updatedBook);
+    }
+
+    @Override
+    public void deleteBookById(long id) {
+        Book book = bookRepository.findById(id).orElseThrow(() -> new BookNotFoundException("Book with id: " + id + " could not be delete"));
+        bookRepository.delete(book);
     }
 
 

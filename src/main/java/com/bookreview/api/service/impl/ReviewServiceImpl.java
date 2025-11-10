@@ -47,11 +47,43 @@ public class ReviewServiceImpl implements ReviewService {
 
         Review review = reviewRepository.findById(reviewId).orElseThrow(() -> new ReviewNotFoundException("Review with associated book not found"));
 
-        if(review.getBook().getId() != book.getId()) {
+        if (review.getBook().getId() != book.getId()) {
             throw new ReviewNotFoundException("This review does not belong to this book");
         }
 
         return mapToDto(review);
+    }
+
+    @Override
+    public ReviewDto updateReview(long bookId, int reviewId, ReviewDto reviewDto) {
+        Book book = bookRepository.findById(bookId).orElseThrow(() -> new BookNotFoundException("Book with associated review not found"));
+
+        Review review = reviewRepository.findById(reviewId).orElseThrow(() -> new ReviewNotFoundException("Review with associated book not found"));
+
+        if (review.getBook().getId() != book.getId()) {
+            throw new ReviewNotFoundException("This review does not belong to this book");
+        }
+
+        review.setTitle(reviewDto.getTitle());
+        review.setContent(reviewDto.getContent());
+        review.setStars(reviewDto.getStars());
+
+        Review updatedReview = reviewRepository.save(review);
+
+        return mapToDto(updatedReview);
+    }
+
+    @Override
+    public void deleteReviewById(long bookId, int reviewId) {
+        Book book = bookRepository.findById(bookId).orElseThrow(() -> new BookNotFoundException("Book with associated review not found"));
+
+        Review review = reviewRepository.findById(reviewId).orElseThrow(() -> new ReviewNotFoundException("Review with associated book not found"));
+
+        if (review.getBook().getId() != book.getId()) {
+            throw new ReviewNotFoundException("This review does not belong to this book");
+        }
+
+        reviewRepository.delete(review);
     }
 
 

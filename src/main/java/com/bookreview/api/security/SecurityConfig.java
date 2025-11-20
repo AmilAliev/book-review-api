@@ -31,7 +31,13 @@ public class SecurityConfig {
                 .sessionManagement(session ->
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/auth/**").permitAll()
+                        .requestMatchers(
+                                "/api/auth/**",          // your API login/signup
+                                "/login.html",           // your login page
+                                "/style.css",            // CSS
+                                "/app.js",               // JS
+                                "/index.html"           // optional
+                        ).permitAll()
                         .anyRequest().authenticated()
                 );
 

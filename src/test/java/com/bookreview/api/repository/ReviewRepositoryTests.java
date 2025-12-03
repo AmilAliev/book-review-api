@@ -62,9 +62,12 @@ public class ReviewRepositoryTests {
                 title("title").content("content").stars(5)
                 .build();
 
-        Review reviewReturn = reviewRepository.findById(review.getId()).get();
+        Review savedReview = reviewRepository.save(review);
+
+        Review reviewReturn = reviewRepository.findById(savedReview.getId()).orElse(null);
 
         Assertions.assertNotNull(reviewReturn);
+        Assertions.assertEquals("title", reviewReturn.getTitle());
     }
 
     @Test
@@ -93,8 +96,8 @@ public class ReviewRepositoryTests {
                 .build();
 
         reviewRepository.save(review);
-
         reviewRepository.deleteById(review.getId());
+
         Optional<Review> reviewOptional = reviewRepository.findById(review.getId());
 
         Assertions.assertTrue(reviewOptional.isEmpty());

@@ -56,11 +56,13 @@ public class ReviewServiceImpl implements ReviewService {
 
     @Override
     public ReviewDto updateReview(long bookId, int reviewId, ReviewDto reviewDto) {
-        Book book = bookRepository.findById(bookId).orElseThrow(() -> new BookNotFoundException("Book with associated review not found"));
+        Book book = bookRepository.findById(bookId)
+                .orElseThrow(() -> new BookNotFoundException("Book with associated review not found"));
 
-        Review review = reviewRepository.findById(reviewId).orElseThrow(() -> new ReviewNotFoundException("Review with associated book not found"));
+        Review review = reviewRepository.findById(reviewId)
+                .orElseThrow(() -> new ReviewNotFoundException("Review with associated book not found"));
 
-        if (review.getBook().getId() != book.getId()) {
+        if (review.getBook() == null || review.getBook().getId() != book.getId()) {
             throw new ReviewNotFoundException("This review does not belong to this book");
         }
 
@@ -72,6 +74,7 @@ public class ReviewServiceImpl implements ReviewService {
 
         return mapToDto(updatedReview);
     }
+
 
     @Override
     public void deleteReviewById(long bookId, int reviewId) {

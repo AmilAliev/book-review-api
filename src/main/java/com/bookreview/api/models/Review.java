@@ -21,6 +21,6 @@ public class Review {
     private int stars;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "pokemon_id")
+    @JoinColumn(name = "book_id")
     private Book book;
 }

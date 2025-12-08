@@ -4,10 +4,12 @@ services:
   postgres:
     image: postgres:15
     container_name: bookreview-postgres
+    env_file:
+      - .env
     environment:
-      POSTGRES_DB: bookapi
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: password
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     ports:
       - "5432:5432"
     volumes:
@@ -15,7 +17,7 @@ services:
     networks:
       - bookreview-net
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER}"]
       interval: 5s
       retries: 5
 
@@ -24,12 +26,13 @@ services:
       context: .
       dockerfile: Dockerfile
     container_name: bookreview-app
+    env_file:
+      - .env
     environment:
       SPRING_PROFILES_ACTIVE: docker
-      SECRET_DB_PASSWORD: password
-      SECRET_JWTSECRET: 050fc6a92a1a0e93f906b9fa23e3b930342781142f1aa43f316f3dc63bac70bc1af36a07b74a355b769160033e436af16e436af16fdf9a3586e86eebc99dc126fcac2b20
-      SECRET_JWTEXPIRATIONINMS: 3600000
-
+      SECRET_DB_PASSWORD: ${SECRET_DB_PASSWORD}
+      SECRET_JWTSECRET: ${SECRET_JWTSECRET}
+      SECRET_JWTEXPIRATIONINMS: ${SECRET_JWTEXPIRATIONINMS}
     ports:
       - "8081:8081"
     depends_on:

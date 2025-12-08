@@ -32,11 +32,12 @@ public class SecurityConfig {
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
-                                "/api/auth/**",          // your API login/signup
-                                "/login.html",           // your login page
-                                "/style.css",            // CSS
-                                "/app.js",               // JS
-                                "/index.html"           // optional
+//                                "/api/books/**",       // test for docker-compose
+                                "/api/auth/**",        // API login/signup
+                                "/login.html",         // your login page
+                                "/v3/api-docs/**",     // Swagger JSON
+                                "/swagger-ui/**",      // Swagger UI
+                                "/swagger-ui.html"     // Swagger UI HTML
                         ).permitAll()
                         .anyRequest().authenticated()
                 );

@@ -1,0 +1,46 @@
+version: "3.8"
+
+services:
+  postgres:
+    image: postgres:15
+    container_name: bookreview-postgres
+    environment:
+      POSTGRES_DB: bookapi
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - bookreview-net
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      retries: 5
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: bookreview-app
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+      SECRET_DB_PASSWORD: password
+      SECRET_JWTSECRET: 050fc6a92a1a0e93f906b9fa23e3b930342781142f1aa43f316f3dc63bac70bc1af36a07b74a355b769160033e436af16e436af16fdf9a3586e86eebc99dc126fcac2b20
+      SECRET_JWTEXPIRATIONINMS: 3600000
+
+    ports:
+      - "8081:8081"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - bookreview-net
+
+volumes:
+  postgres_data:
+
+networks:
+  bookreview-net:
+    driver: bridge
